@@ -23,9 +23,9 @@ pipeline {
                     def repoURL = 'https://github.com/johnlaurance/TP_SECDEVOPS.git'
                     // Create reports directory if it doesn't exist
                     sh "mkdir -p ${reportDir}"
-                    // Run TruffleHog and save report to the reports directory
-                    docker.image('trufflesecurity/trufflehog')
-                        .run("-v ${reportDir}:/reports trufflehog --json ${repoURL} > ${reportDir}/report.json")
+                    // Run TruffleHog using Docker installed by Jenkins
+                    tool name: 'docker', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool', label: ''
+                    sh "docker run -d -v ${reportDir}:/reports trufflehog --json ${repoURL} trufflesecurity/trufflehog"
                     // Archive TruffleHog report as artifact
                     archiveArtifacts artifacts: 'reports/*.json', allowEmptyArchive: true
                 }
