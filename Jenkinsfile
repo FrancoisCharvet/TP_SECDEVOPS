@@ -21,8 +21,12 @@ pipeline {
                 script {
                     def reportDir = "${env.WORKSPACE}/reports"
                     def repoURL = 'https://github.com/johnlaurance/TP_SECDEVOPS.git'
+                    // Create reports directory if it doesn't exist
+                    sh "mkdir -p ${reportDir}"
+                    // Run TruffleHog and save report to the reports directory
                     docker.image('trufflesecurity/trufflehog')
-                        .run("-v ${reportDir}:/reports trufflehog --json ${repoURL} > /reports/report.json")
+                        .run("-v ${reportDir}:/reports trufflehog --json ${repoURL} > ${reportDir}/report.json")
+                    // Archive TruffleHog report as artifact
                     archiveArtifacts artifacts: 'reports/*.json', allowEmptyArchive: true
                 }
             }
